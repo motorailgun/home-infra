@@ -12,7 +12,7 @@ jobs:
     env:
       TF_VAR_pm_api_url: ${{ vars.PROXMOX_URL }}
       PROXMOX_URL: ${{ vars.PROXMOX_URL }}
-      TF_VAR_pm_api_token_id: ${{ var.PROXMOX_API_TOKEN_ID }}
+      TF_VAR_pm_api_token_id: ${{ vars.PROXMOX_API_TOKEN_ID }}
       TF_VAR_pm_api_token_secret: ${{ secrets.PROXMOX_API_TOKEN_SECRET }}
       TF_VAR_pm_ssh_public_key: ${{ secrets.PROXMOX_SSH_PUBKEY }}
       TF_VAR_pm_ssh_private_key: ${{ secrets.PROXMOX_SSH_PRIVKEY }}
