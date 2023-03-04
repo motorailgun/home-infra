@@ -21,6 +21,15 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
+      - name: install mitmproxy
+        run: |
+          sudo apt install mitmproxy
+      - name: dry-run mitmproxy
+        run: |
+          screen -dmS dryrun mitmproxy
+          sleep 2
+          screen -X -S dryrun kill
+
       - name: create mitmproxy yaml
         env:
           CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
@@ -28,17 +37,9 @@ jobs:
         run: |
           mkdir -p ~/.mitmproxy
           ./create_mitmproxy_yaml.sh > ~/.mitmproxy/config.yaml
-
-      - name: install mitmproxy
-        run: |
-          sudo apt install mitmproxy
       - name: start mitmproxy
         run: |
           screen -dmS proxy mitmproxy
-
-      - name: cert doko
-        run: |
-          ls -a ~/.mitmproxy
 
       - name: setup mitm CA cert
         run: |
