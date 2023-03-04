@@ -41,6 +41,10 @@ jobs:
         run: |
           screen -dmS proxy mitmproxy
 
+      - name: honntodoko
+        run: |
+          sudo find / -iname "mitmproxy-ca-cert.pem"
+
       - name: setup mitm CA cert
         run: |
           openssl x509 -in ~/.mitmproxy/mitmproxy-ca-cert.pem -inform PEM -out out.crt
