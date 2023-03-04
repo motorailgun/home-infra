@@ -36,6 +36,11 @@ jobs:
         run: |
           screen -dmS proxy mitmproxy
 
+      - name: cert doko
+        run: |
+          ls -a
+          ls -a ~/
+
       - name: setup mitm CA cert
         run: |
           openssl x509 -in ~/.mitmproxy/mitmproxy-ca-cert.pem -inform PEM -out out.crt
