@@ -38,7 +38,7 @@ jobs:
 
       - name: setup mitm CA cert
         run: |
-          openssl x509 -in ./.mitmproxy/mitmproxy-ca-cert.pem -inform PEM -out out.crt
+          openssl x509 -in ~/.mitmproxy/mitmproxy-ca-cert.pem -inform PEM -out out.crt
           sudo mkdir /usr/local/share/ca-certificates/extra
           sudo cp out.crt /usr/local/share/ca-certificates/extra
           sudo dpkg-reconfigure ca-certificates --frontend noninteractive
