@@ -27,7 +27,7 @@ jobs:
           CF_ACCESS_CLIENT_SECRET: ${{ secrets. CF_ACCESS_CLIENT_SECRET }}
         run: |
           mkdir -p ~/.mitmproxy
-          ./create_mitmproxy_yaml.sh > ./.mitmproxy/config.yaml
+          ./create_mitmproxy_yaml.sh > ~/.mitmproxy/config.yaml
 
       - name: install mitmproxy
         run: |
