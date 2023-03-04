@@ -38,8 +38,7 @@ jobs:
 
       - name: cert doko
         run: |
-          ls -a
-          ls -a ~/
+          ls -a ~/.mitmproxy
 
       - name: setup mitm CA cert
         run: |
