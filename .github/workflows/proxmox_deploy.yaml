@@ -1,0 +1,66 @@
+name: Deploy to Proxox
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      TF_PM_API_URL: ${{ vars.PROXMOX_URL }}
+      PROXMOX_URL: ${{ vars.PROXMOX_URL }}
+      TF_PM_API_TOKEN_ID: ${{ secrets.PROXMOX_API_TOKEN_ID }}
+      TF_PM_API_TOKEN_SECRET: ${{ secrets.PROXMOX_API_TOKEN_SECRET }}
+      TF_PM_SSH_PUBLIC_KEY: ${{ secrets.PROXMOX_SSH_PUBKEY }}
+      TF_PM_SSH_PRIVATE_KEY: ${{ secrets.PROXMOX_SSH_PRIVKEY }}
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: create mitmproxy yaml
+        env:
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets. CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          mkdir -p ~/.mitmproxy
+          ./create_mitmproxy_yaml.sh > ./.mitmproxy/config.yaml
+
+      - name: install mitmproxy
+        run: |
+          sudo apt install mitmproxy
+      - name: start mitmproxy
+        run: |
+          screen -dmS proxy mitmproxy
+
+      - name: setup mitm CA cert
+        run: |
+          openssl x509 -in ./.mitmproxy/mitmproxy-ca-cert.pem -inform PEM -out out.crt
+          sudo mkdir /usr/local/share/ca-certificates/extra
+          sudo cp out.crt /usr/local/share/ca-certificates/extra
+          sudo dpkg-reconfigure ca-certificates --frontend noninteractive
+          sudo update-ca-certificates
+
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: initialize
+        run: |
+          terraform init
+      - name: validate
+        run: |
+          terraform validate
+
+      - name: plan
+        run: terraform plan -no-color -input=false
+        continue-on-error: true
+        env:
+          HTTPS_PROXY: 'http://localhost:8080'
+      
+      - name: apply
+        run: terraform apply -auto-approve -input=false
+        env:
+          HTTPS_PROXY: 'http://localhost:8080'
