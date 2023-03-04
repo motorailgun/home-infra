@@ -40,10 +40,7 @@ jobs:
       - name: start mitmproxy
         run: |
           screen -dmS proxy mitmproxy
-
-      - name: honntodoko
-        run: |
-          sudo find / -iname "mitmproxy-ca-cert.pem"
+          sleep 5
 
       - name: setup mitm CA cert
         run: |
