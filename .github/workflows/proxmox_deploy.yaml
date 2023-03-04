@@ -10,12 +10,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      TF_PM_API_URL: ${{ vars.PROXMOX_URL }}
+      TF_VAR_pm_api_url: ${{ vars.PROXMOX_URL }}
       PROXMOX_URL: ${{ vars.PROXMOX_URL }}
-      TF_PM_API_TOKEN_ID: ${{ secrets.PROXMOX_API_TOKEN_ID }}
-      TF_PM_API_TOKEN_SECRET: ${{ secrets.PROXMOX_API_TOKEN_SECRET }}
-      TF_PM_SSH_PUBLIC_KEY: ${{ secrets.PROXMOX_SSH_PUBKEY }}
-      TF_PM_SSH_PRIVATE_KEY: ${{ secrets.PROXMOX_SSH_PRIVKEY }}
+      TF_VAR_pm_api_token_id: ${{ secrets.PROXMOX_API_TOKEN_ID }}
+      TF_VAR_pm_api_token_secret: ${{ secrets.PROXMOX_API_TOKEN_SECRET }}
+      TF_VAR_pm_ssh_public_key: ${{ secrets.PROXMOX_SSH_PUBKEY }}
+      TF_VAR_pm_ssh_private_key: ${{ secrets.PROXMOX_SSH_PRIVKEY }}
 
     steps:
       - name: checkout
@@ -24,11 +24,6 @@ jobs:
       - name: install mitmproxy
         run: |
           sudo apt install mitmproxy
-      - name: dry-run mitmproxy
-        run: |
-          screen -dmS dryrun mitmproxy
-          sleep 2
-          screen -X -S dryrun kill
 
       - name: create mitmproxy yaml
         env:
