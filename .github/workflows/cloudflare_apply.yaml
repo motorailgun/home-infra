@@ -12,7 +12,7 @@ jobs:
         working-directory: cloudflare
 
     env:
-      TF_VAR_cloudflare_token: ${{ vars.CLOUDFLARE_TOKEN_YUKARIUK_TUNNEL }}
+      TF_VAR_cloudflare_token: ${{ secrets.CLOUDFLARE_TOKEN_YUKARIUK_TUNNEL }}
       TF_VAR_cloudflare_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID_YUKARIUK }}
       TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
