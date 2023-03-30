@@ -1,0 +1,83 @@
+{
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+
+    "metadata": {
+        "name": "code-server-deployment",
+        "labels": {
+            "app": "code-server"
+        }
+    },
+
+    "spec": {
+        "replicas": 1,
+        "selector": {
+            "matchLabels":{
+                "app": "code-server"
+            }
+        },
+
+        "template": {
+            "metadata": {
+                "labels": {
+                    "app": "code-server"
+                }
+            },
+
+            "spec": {
+                "containers": [
+                    {
+                        "name": "code-server",
+                        "image": "ghcr.io/coder/code-server:4.11.0-bullseye@sha256:c94ef65f4eef25204cf59c57bb3fcf6d24a08fc3dd428aab83e115131ee59546",
+                        "ports": [
+                            {"containerPort": 8080}
+                        ],
+                        "volumeMounts": [
+                            {
+                                "name": "code-server-config-vol",
+                                "mountPath": "/home/coder/.config/code-server",
+                                "readOnly": true
+                            }
+                        ]
+                    },
+                    {
+                        "name": "cloudflared",
+                        "image": "cloudflare/cloudflared:2023.3.1@sha256:ae2c36ad416f0eb37cc85890724dec96983a31a9f16899a9a36de695e516236e",
+                        "env": [
+                            {
+                                "name": "CLOUDFLARE_TUNNEL_TOKEN",
+                                "valueFrom": {
+                                    "secretKeyRef": {
+                                        "name": "code-server-cloudflared-secret",
+                                        "key": "token"
+                                    }
+                                }
+                            }
+                        ],
+                        "args": [
+                            "tunnel",
+                            "--no-autoupdate",
+                            "run",
+                            "--token",
+                            "$(CLOUDFLARE_TUNNEL_TOKEN)"
+                        ]
+                    }
+                ],
+                "volumes": [
+                    {
+                        "name": "code-server-config-vol",
+                        "configMap": {
+                            "name": "code-server-config",
+                            "items": [
+                                {
+                                    "key": "config-yaml",
+                                    "path": "config.yaml"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}
