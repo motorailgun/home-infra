@@ -44,7 +44,9 @@ jobs:
           sudo update-ca-certificates
 
       - name: setup terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
+        with:
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_API_TOKEN }}
 
       - name: initialize
         run: |

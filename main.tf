@@ -5,6 +5,14 @@ terraform {
       version = "2.9.13"
     }
   }
+
+  cloud {
+    organization = "motorailgun"
+
+    workspaces {
+      name = "home-infra"
+    }
+  }
 }
 
 variable "pm_api_token_id" {
