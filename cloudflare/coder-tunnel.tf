@@ -1,11 +1,11 @@
 terraform {
-  /* cloud {
+  cloud {
     organization = "motorailgun"
 
     workspaces {
       name = "home-infra"
     }
-  } */
+  }
 
   required_providers {
     cloudflare = {
