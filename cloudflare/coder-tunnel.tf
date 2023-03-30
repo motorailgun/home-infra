@@ -59,6 +59,16 @@ resource "cloudflare_tunnel" "coder" {
   secret     = random_id.tunnel_secret.b64_std
 }
 
+resource "cloudflare_tunnel_config" "coder" {
+  account_id = var.cloudflare_account_id
+  tunnel_id = cloudflare_tunnel.coder.id
+  config {
+    ingress_rule {
+      service = "http://localhost:8080"
+    }
+  }
+}
+
 resource "cloudflare_record" "coder" {
   zone_id = var.cloudflare_zone_id
   name    = "coder"
