@@ -67,23 +67,18 @@ resource "cloudflare_access_application" "coder" {
   domain                    = "coder.yukari.uk"
   type                      = "self_hosted"
   session_duration          = "24h"
+  allowed_idps = [ "GitHub-motorailgun" ]
   auto_redirect_to_identity = true
 }
 
-resource "cloudflare_access_policy" "coder" {
+resource "cloudflare_access_policy" "github" {
   application_id = cloudflare_access_application.coder.id
   zone_id        = var.cloudflare_zone_id
-  name           = "policy for coder"
+  name           = "policy for coder/allow github auth"
   precedence     = "1"
   decision       = "allow"
 
   include {
-    github {
-      name = "GitHub-motorailgun"
-    }
-  }
-
-  require {
     github {
       name = "GitHub-motorailgun"
     }
