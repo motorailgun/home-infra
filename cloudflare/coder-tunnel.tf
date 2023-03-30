@@ -85,8 +85,6 @@ resource "cloudflare_access_policy" "github" {
   decision       = "allow"
 
   include {
-    github {
-      identity_provider_id = var.cloudflare_idp_github_id
-    }
+    login_method = [ var.cloudflare_idp_github_id ]
   }
 }
