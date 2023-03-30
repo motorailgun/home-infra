@@ -86,7 +86,7 @@ resource "cloudflare_access_policy" "github" {
 
   include {
     github {
-      name = "GitHub-motorailgun"
+      identity_provider_id = var.cloudflare_idp_github_id
     }
   }
 }
