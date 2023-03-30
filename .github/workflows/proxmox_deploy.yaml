@@ -1,8 +1,6 @@
 name: Deploy to Proxox
 on:
   push:
-    branches:
-      - master
     tags:
       - v*
 
