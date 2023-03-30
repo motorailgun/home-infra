@@ -36,7 +36,7 @@ variable "cloudflare_zone_id" {
   sensitive   = true
 }
 
-variable "cloudflare_idp_gihub_id" {
+variable "cloudflare_idp_github_id" {
   description = "ID of IdP of GitHub Auth"
   type        = string
   sensitive   = true
