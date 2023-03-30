@@ -73,7 +73,7 @@ resource "cloudflare_access_application" "coder" {
   domain                    = "coder.yukari.uk"
   type                      = "self_hosted"
   session_duration          = "24h"
-  allowed_idps              = [var.cloudflare_idp_gihub_id]
+  allowed_idps              = [var.cloudflare_idp_github_id]
   auto_redirect_to_identity = true
 }
 
