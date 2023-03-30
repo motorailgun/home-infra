@@ -1,11 +1,11 @@
 terraform {
-  cloud {
+  /* cloud {
     organization = "motorailgun"
 
     workspaces {
       name = "home-infra"
     }
-  }
+  } */
 
   required_providers {
     cloudflare = {
@@ -32,6 +32,12 @@ variable "cloudflare_account_id" {
 
 variable "cloudflare_zone_id" {
   description = "Zone ID for yukari.uk"
+  type        = string
+  sensitive   = true
+}
+
+variable "cloudflare_idp_gihub_id" {
+  description = "ID of IdP of GitHub Auth"
   type        = string
   sensitive   = true
 }
@@ -67,7 +73,7 @@ resource "cloudflare_access_application" "coder" {
   domain                    = "coder.yukari.uk"
   type                      = "self_hosted"
   session_duration          = "24h"
-  allowed_idps = [ "GitHub-motorailgun" ]
+  allowed_idps              = var.cloudflare_idp_gihub_id
   auto_redirect_to_identity = true
 }
 
