@@ -1,8 +1,8 @@
 name: Apply Terraform 
 on:
   push:
-    branches:
-      - master
+    paths:
+      - 'cloudflare/**'
 
 jobs:
   deploy:
