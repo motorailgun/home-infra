@@ -1,11 +1,11 @@
 terraform {
-  cloud {
+  /* cloud {
     organization = "motorailgun"
 
     workspaces {
       name = "home-infra-proxmox"
-    }
-  }
+    } 
+  }*/
 
   required_providers {
     proxmox = {
@@ -50,7 +50,7 @@ provider "proxmox" {
   pm_api_token_id     = var.pm_api_token_id
   pm_api_token_secret = var.pm_api_token_secret
 
-  pm_proxy_server = "http://localhost:8080"
+  // pm_proxy_server = "http://localhost:8080"
 }
 
 
@@ -68,10 +68,10 @@ resource "proxmox_vm_qemu" "kubernetes-master" {
   sockets = 1
   memory  = 4096
 
-  boot = "virtio0"
+  scsihw = "virtio-scsi-pci"
 
   onboot       = true
-  force_create = true
+  force_create = false
 
   os_type   = "cloud-init"
   ipconfig0 = "ip=192.168.1.152/24,gw=192.168.1.1"
