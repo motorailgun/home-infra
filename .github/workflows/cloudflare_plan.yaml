@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - 'cloudflare/**'
-      - ".github/workflows/cloudflare*"
+      - ".github/workflows/cloudflare*.yaml"
     tags-ignore:
       - v*
 
