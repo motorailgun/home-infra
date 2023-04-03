@@ -1,8 +1,8 @@
 name: Apply Terraform 
 on:
   push:
-    tags:
-      - V*
+    paths:
+      - 'cloudflare/**'
 
 jobs:
   deploy:
@@ -35,6 +35,3 @@ jobs:
 
       - name: plan
         run: terraform plan -no-color -input=false
-      
-      - name: apply
-        run: terraform apply -auto-approve -input=false

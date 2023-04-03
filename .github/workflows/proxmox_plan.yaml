@@ -1,5 +1,8 @@
-name: Deploy to Proxox but Manually
-on: workflow_dispatch
+name: Check Proxmox Terraform manifest
+on:
+  push:
+    paths:
+      - "main.tf"
 
 jobs:
   deploy:
@@ -54,11 +57,5 @@ jobs:
 
       - name: plan
         run: terraform plan -no-color -input=false
-        continue-on-error: true
-        env:
-          HTTPS_PROXY: 'http://localhost:8080'
-      
-      - name: apply
-        run: terraform apply -auto-approve -input=false
         env:
           HTTPS_PROXY: 'http://localhost:8080'
