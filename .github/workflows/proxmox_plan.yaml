@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - "proxmox/main.tf"
-      - ".github/workflows/proxmox**"
+      - ".github/workflows/proxmox*"
     tags-ignore:
       - v*
 
