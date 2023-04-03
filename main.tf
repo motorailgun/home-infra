@@ -53,30 +53,36 @@ provider "proxmox" {
 
 
 
-resource "proxmox_vm_qemu" "cf-tunnel" {
-  name        = "cloudflare-tunnel"
-  desc        = "VM for Cloudflare Tunnel"
+resource "proxmox_vm_qemu" "kubernetes-master" {
+  name        = "kubernetes-master"
+  desc        = "Master node of kubernetes cluster"
   target_node = "takahashi"
 
   clone      = "debian-template"
   full_clone = true
 
   cpu     = "host"
-  cores   = 1
+  cores   = 3
   sockets = 1
-  memory  = 1024
+  memory  = 4096
 
   onboot       = true
   force_create = true
 
   os_type   = "cloud-init"
-  ipconfig0 = "ip=192.168.1.151/24,gw=192.168.1.1"
+  ipconfig0 = "ip=192.168.1.152/24,gw=192.168.1.1"
 
   ciuser     = "debian"
   cipassword = "debian"
   ssh_user   = "debian"
 
-  sshkeys = var.pm_ssh_public_key
-
+  sshkeys         = var.pm_ssh_public_key
   ssh_private_key = var.pm_ssh_private_key
+
+  disk {
+    type    = "virtio"
+    storage = "local-lvm"
+    size    = "45G"
+    ssd     = 1
+  }
 }
