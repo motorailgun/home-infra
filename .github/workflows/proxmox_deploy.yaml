@@ -7,6 +7,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: proxmox
     env:
       TF_VAR_pm_api_url: ${{ vars.PROXMOX_URL }}
       PROXMOX_URL: ${{ vars.PROXMOX_URL }}

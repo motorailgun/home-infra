@@ -5,7 +5,7 @@ on:
       - 'cloudflare/**'
 
 jobs:
-  deploy:
+  plan:
     runs-on: ubuntu-latest
     defaults:
       run:
