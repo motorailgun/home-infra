@@ -2,7 +2,7 @@ name: Check Proxmox Terraform manifest
 on:
   push:
     paths:
-      - "proxmox/main.tf"
+      # - "proxmox/main.tf"
       - ".github/workflows/proxmox*.yaml"
     tags-ignore:
       - v*
