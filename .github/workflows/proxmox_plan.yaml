@@ -2,7 +2,7 @@ name: Check Proxmox Terraform manifest
 on:
   push:
     paths:
-      - "main.tf"
+      - "proxmox/main.tf"
 
 jobs:
   plan:
