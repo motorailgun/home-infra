@@ -1,4 +1,4 @@
-name: Apply Terraform 
+name: Apply Terraform for Cloudflare
 on:
   push:
     paths:

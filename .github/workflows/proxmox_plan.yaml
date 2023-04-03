@@ -34,6 +34,8 @@ jobs:
         run: |
           mkdir -p ~/.mitmproxy
           ./create_mitmproxy_yaml.sh > ~/.mitmproxy/config.yaml
+          sleep 10
+          
       - name: start mitmproxy
         run: |
           screen -dmS proxy mitmproxy

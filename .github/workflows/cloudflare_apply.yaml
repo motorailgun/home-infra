@@ -1,4 +1,4 @@
-name: Apply Terraform 
+name: Terraform plan for cloudflare
 on:
   push:
     tags:
