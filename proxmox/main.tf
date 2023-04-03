@@ -50,9 +50,8 @@ provider "proxmox" {
   pm_api_token_id     = var.pm_api_token_id
   pm_api_token_secret = var.pm_api_token_secret
 
-  pm_debug = true
-  pm_log_levels = {
-    _default = "debug"
+  provider "proxmox" {
+    pm_proxy_server = "http://localhost:8080"
   }
 }
 

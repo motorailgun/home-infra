@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - 'cloudflare/**'
-      - ".github/workflows/**"
+      - ".github/workflows/cloudflare**"
 
 jobs:
   plan:
