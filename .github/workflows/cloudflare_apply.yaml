@@ -28,7 +28,7 @@ jobs:
 
       - name: initialize
         run: |
-          terraform init
+          terraform init -upgrade
       - name: validate
         run: |
           terraform validate
