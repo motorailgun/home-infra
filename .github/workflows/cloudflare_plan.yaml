@@ -4,8 +4,6 @@ on:
     paths:
       - 'cloudflare/**'
       - ".github/workflows/cloudflare*.yaml"
-    tags-ignore:
-      - v*
 
 jobs:
   plan:
