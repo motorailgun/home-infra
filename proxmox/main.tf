@@ -50,9 +50,7 @@ provider "proxmox" {
   pm_api_token_id     = var.pm_api_token_id
   pm_api_token_secret = var.pm_api_token_secret
 
-  provider "proxmox" {
-    pm_proxy_server = "http://localhost:8080"
-  }
+  pm_proxy_server = "http://localhost:8080"
 }
 
 
