@@ -36,7 +36,6 @@ jobs:
           ./create_mitmproxy_yaml.sh > ~/.mitmproxy/config.yaml
       - name: start mitmproxy
         run: |
-          cd ~
           screen -dmS proxy mitmproxy
           sleep 5
 
