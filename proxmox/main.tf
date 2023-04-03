@@ -1,11 +1,11 @@
 terraform {
-  /* cloud {
+  cloud {
     organization = "motorailgun"
 
     workspaces {
       name = "home-infra-proxmox"
     } 
-  }*/
+  }
 
   required_providers {
     proxmox = {
@@ -50,7 +50,7 @@ provider "proxmox" {
   pm_api_token_id     = var.pm_api_token_id
   pm_api_token_secret = var.pm_api_token_secret
 
-  // pm_proxy_server = "http://localhost:8080"
+  pm_proxy_server = "http://localhost:8080"
 }
 
 
