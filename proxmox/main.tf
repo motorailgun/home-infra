@@ -1,11 +1,11 @@
 terraform {
-  cloud {
+  /* cloud {
     organization = "motorailgun"
 
     workspaces {
       name = "home-infra-proxmox"
     }
-  }
+  } */
 
   required_providers {
     proxmox = {
@@ -45,12 +45,12 @@ variable "pm_ssh_private_key" {
 }
 
 provider "proxmox" {
-  pm_tls_insecure     = false
+  pm_tls_insecure     = true
   pm_api_url          = var.pm_api_url
   pm_api_token_id     = var.pm_api_token_id
   pm_api_token_secret = var.pm_api_token_secret
 
-  pm_proxy_server = "http://localhost:8080"
+  // pm_proxy_server = "http://localhost:8080"
 }
 
 
@@ -67,6 +67,8 @@ resource "proxmox_vm_qemu" "kubernetes-master" {
   cores   = 3
   sockets = 1
   memory  = 4096
+
+  boot = "virtio0"
 
   onboot       = true
   force_create = true
@@ -85,6 +87,6 @@ resource "proxmox_vm_qemu" "kubernetes-master" {
     type    = "virtio"
     storage = "local-lvm"
     size    = "45G"
-    ssd     = 1
+    ssd = 1
   }
 }
