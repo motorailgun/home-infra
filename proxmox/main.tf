@@ -82,6 +82,13 @@ resource "proxmox_vm_qemu" "kubernetes-master" {
 
   sshkeys         = var.pm_ssh_public_key
   ssh_private_key = var.pm_ssh_private_key
+
+  disk {
+    type    = "virtio"
+    storage = "local-lvm"
+    size    = "45G"
+    ssd = 1
+  }
 }
 
 
