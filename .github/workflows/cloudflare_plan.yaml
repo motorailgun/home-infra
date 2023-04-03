@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'cloudflare/**'
+      - ".github/workdlows/**"
 
 jobs:
   plan:

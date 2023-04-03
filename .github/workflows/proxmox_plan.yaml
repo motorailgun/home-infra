@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - "proxmox/main.tf"
+      - ".github/workdlows/**"
 
 jobs:
   plan:
