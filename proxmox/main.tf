@@ -4,7 +4,7 @@ terraform {
 
     workspaces {
       name = "home-infra-proxmox"
-    } 
+    }
   }
 
   required_providers {
@@ -70,6 +70,9 @@ resource "proxmox_vm_qemu" "kubernetes-master" {
 
   scsihw = "virtio-scsi-pci"
 
+  agent   = 1
+  qemu_os = "linux"
+
   onboot       = true
   force_create = false
 
@@ -87,7 +90,19 @@ resource "proxmox_vm_qemu" "kubernetes-master" {
     type    = "virtio"
     storage = "local-lvm"
     size    = "45G"
-    ssd = 1
+    ssd     = 1
+  }
+
+  network {
+    bridge    = "vmbr0"
+    firewall  = false
+    link_down = false
+    macaddr   = "52:61:7A:4B:24:95"
+    model     = "virtio"
+    mtu       = 0
+    queues    = 0
+    rate      = 0
+    tag       = -1
   }
 }
 
