@@ -2,7 +2,7 @@ name: Terraform plan for cloudflare
 on:
   push:
     tags:
-      - V*
+      - v*
 
 jobs:
   deploy:
