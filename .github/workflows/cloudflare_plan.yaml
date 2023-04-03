@@ -4,6 +4,8 @@ on:
     paths:
       - 'cloudflare/**'
       - ".github/workflows/cloudflare**"
+    tags-ignore:
+      - v*
 
 jobs:
   plan:

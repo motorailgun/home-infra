@@ -4,6 +4,8 @@ on:
     paths:
       - "proxmox/main.tf"
       - ".github/workflows/proxmox**"
+    tags-ignore:
+      - v*
 
 jobs:
   plan:
