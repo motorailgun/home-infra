@@ -90,3 +90,33 @@ resource "proxmox_vm_qemu" "kubernetes-master" {
     ssd = 1
   }
 }
+
+
+resource "proxmox_vm_qemu" "haproxy" {
+  name        = "haproxy"
+  desc        = "haproxy"
+  target_node = "takahashi"
+
+  clone      = "debian-template"
+  full_clone = true
+
+  cpu     = "host"
+  cores   = 1
+  sockets = 1
+  memory  = 1024
+
+  scsihw = "virtio-scsi-pci"
+
+  onboot       = true
+  force_create = false
+
+  os_type   = "cloud-init"
+  ipconfig0 = "ip=192.168.1.153/24,gw=192.168.1.1"
+
+  ciuser     = "debian"
+  cipassword = "debian"
+  ssh_user   = "debian"
+
+  sshkeys         = var.pm_ssh_public_key
+  ssh_private_key = var.pm_ssh_private_key
+}
