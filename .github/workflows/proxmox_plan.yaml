@@ -12,7 +12,7 @@ jobs:
       run:
         working-directory: proxmox
     env:
-      TF_VAR_pm_api_url: ${{ vars.PROXMOX_URL }}
+      TF_VAR_pm_api_url: ${{ vars.PROXMOX_API_URL }}
       PROXMOX_URL: ${{ vars.PROXMOX_URL }}
       TF_VAR_pm_api_token_id: ${{ vars.PROXMOX_API_TOKEN_ID }}
       TF_VAR_pm_api_token_secret: ${{ secrets.PROXMOX_API_TOKEN_SECRET }}
@@ -34,7 +34,6 @@ jobs:
         run: |
           mkdir -p ~/.mitmproxy
           ./create_mitmproxy_yaml.sh > ~/.mitmproxy/config.yaml
-          sleep 10
           
       - name: start mitmproxy
         run: |
