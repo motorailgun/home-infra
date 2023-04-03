@@ -3,7 +3,7 @@ terraform {
     organization = "motorailgun"
 
     workspaces {
-      name = "home-infra"
+      name = "home-infra-proxmox"
     }
   }
 
