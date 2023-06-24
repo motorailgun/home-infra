@@ -135,3 +135,43 @@ resource "proxmox_vm_qemu" "haproxy" {
   sshkeys         = var.pm_ssh_public_key
   ssh_private_key = var.pm_ssh_private_key
 }
+
+
+resource "proxmox_vm_qemu" "builder" {
+  name        = "builder"
+  desc        = "builder"
+  target_node = "averuni"
+
+  clone      = "debian-template-2"
+  full_clone = true
+
+  cpu     = "host"
+  cores   = 4
+  sockets = 1
+  memory  = 8192
+
+  qemu_os = "linux"
+
+  scsihw = "virtio-scsi-pci"
+
+  onboot       = true
+  force_create = false
+
+  os_type   = "cloud-init"
+  ipconfig0 = "ip=192.168.1.210/24,gw=192.168.1.1"
+
+  ciuser     = "debian"
+  cipassword = "debian"
+  ssh_user   = "debian"
+
+  sshkeys         = var.pm_ssh_public_key
+  ssh_private_key = var.pm_ssh_private_key
+
+  disk {
+    type    = "virtio"
+    storage = "local-lvm"
+    size    = "64G"
+    ssd     = 1
+  }
+
+}
