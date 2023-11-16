@@ -10,7 +10,7 @@ resource "cloudflare_tunnel" "pmx2" {
 
 resource "cloudflare_tunnel_config" "pmx2" {
   account_id = var.cloudflare_account_id
-  tunnel_id = cloudflare_tunnel.coder.id
+  tunnel_id = cloudflare_tunnel.pmx2.id
   config {
     ingress_rule {
       service = "http://192.168.1.200:8006"
@@ -21,7 +21,7 @@ resource "cloudflare_tunnel_config" "pmx2" {
 resource "cloudflare_record" "pmx2" {
   zone_id = var.cloudflare_zone_id
   name    = "pmx2"
-  value   = cloudflare_tunnel.cname
+  value   = cloudflare_tunnel.pmx2.cname
   type    = "CNAME"
   proxied = true
 }
