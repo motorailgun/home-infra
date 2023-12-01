@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  impostor:
+    image: aeonlucid/impostor:nightly
+    restart: always
+    container_name: impostor
+    ports:
+      - 22023:22023/tcp
+      - 22023:22023/udp
+    volumes:
+      - ./config.json:/app/config.json
