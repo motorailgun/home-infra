@@ -47,10 +47,12 @@ provider "cloudflare" {
 }
 
 resource "vultr_instance" "impostor" {
-  region   = "nrt"
+  region   = "nrt"        // Tokyo
   plan     = "vc2-1c-1gb"
-  os_id    = 535
+  os_id    = 535          // Arch Linux
   hostname = "impostor"
+  ssh_key_ids = [ "25fa5e90-361f-4148-a95f-2267ab7c0a7e" ]
+  user_data = file("setup.sh")
 }
 
 resource "cloudflare_record" "impostor" {
@@ -59,4 +61,5 @@ resource "cloudflare_record" "impostor" {
   value   = vultr_instance.impostor.main_ip
   type    = "A"
   ttl     = 180
+  proxied = false
 }
