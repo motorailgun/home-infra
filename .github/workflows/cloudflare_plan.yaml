@@ -1,10 +1,6 @@
 name: Apply Terraform for Cloudflare
 on:
-  push:
-    paths:
-      - 'cloudflare/**'
-      - ".github/workflows/cloudflare*.yaml"
-
+  workflow_dispatch
 jobs:
   plan:
     runs-on: ubuntu-latest
