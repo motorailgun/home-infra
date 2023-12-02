@@ -34,6 +34,7 @@ echo >> /etc/sudoers
 su impostor -c "bash"
 curl -fsL https://github.com/motorailgun/home-infra/raw/master/impostor/docker-compose.yaml -o /home/impostor/docker-compose.yaml
 curl -fsL https://github.com/motorailgun/home-infra/raw/master/impostor/config.json -o /home/impostor/config.json
+curl -fsL https://github.com/motorailgun/home-infra/raw/master/impostor/config_http.json -o /home/impostor/config_http.json
 cd /home/impostor && docker-compose up -d
 exit
 
