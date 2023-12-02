@@ -11,19 +11,18 @@ echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
 echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
 echo "PermitRootLogin no" >> /etc/ssh/sshd_config
 
-systemctl restart sshd
-
 # Create user
 useradd -mG wheel impostor
 passwd -d impostor
 mkdir -p /home/impostor/.ssh
 cp ~/.ssh/auth_keys /home/impostor/.ssh/authorized_keys
 chown -R impostor:impostor /home/impostor/.ssh
-chmod -R 600 /home/impostor/.ssh
+chmod 755 /home/impostor/.ssh
+chmod 644 /home/impostor/.ssh/authorized_keys
 
 # Update and install packages
 echo 'Server = https://mirrors.cat.net/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist
-pacman -Syyu --noconfirm docker sudo
+pacman -S --noconfirm --needed docker docker-compose sudo
 systemctl enable --now docker
 
 # Modify user
@@ -40,4 +39,10 @@ exit
 
 # set ufw to allow impostor
 ufw allow from any to any port 22023 proto any
+ufw allow from any to any port 80 proto tcp
+ufw allow from any to any port 443 proto tcp
 ufw reload
+
+# remove cloud-init ssh config
+rm /etc/ssh/sshd_config.d/50-cloud-init.conf
+systemctl restart sshd
