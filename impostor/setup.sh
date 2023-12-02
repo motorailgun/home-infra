@@ -22,7 +22,7 @@ chmod 644 /home/impostor/.ssh/authorized_keys
 
 # Update and install packages
 echo 'Server = https://mirrors.cat.net/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist
-pacman -S --noconfirm --needed docker docker-compose sudo
+pacman -Syyu --noconfirm --needed docker docker-compose sudo
 systemctl enable --now docker
 
 # Modify user
