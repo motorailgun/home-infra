@@ -8,5 +8,45 @@ services:
     ports:
       - 22023:22023/tcp
       - 22023:22023/udp
+    expose:
+      - "22020"
     volumes:
       - ./config.json:/app/config.json
+      - ./config_http.json:/app/config_http.json
+    environment:
+      - VIRTUAL_HOST=impostor.yukari.uk
+      - VIRTUAL_PORT=22020
+      - LETSENCRYPT_HOST=impostor.yukari.uk
+
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - conf:/etc/nginx/conf.d
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - certs:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  acme-companion:
+    image: nginxproxy/acme-companion
+    container_name: nginx-proxy-acme
+    environment:
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+    volumes:
+      - conf:/etc/nginx/conf.d
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - certs:/etc/nginx/certs:rw
+      - acme:/etc/acme.sh
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+volumes:
+  conf:
+  vhost:
+  html:
+  certs:
+  acme:
