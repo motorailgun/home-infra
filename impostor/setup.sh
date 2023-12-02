@@ -15,14 +15,14 @@ echo "PermitRootLogin no" >> /etc/ssh/sshd_config
 useradd -mG wheel impostor
 passwd -d impostor
 mkdir -p /home/impostor/.ssh
-cp ~/.ssh/auth_keys /home/impostor/.ssh/authorized_keys
+cp ~/.ssh/authorized_keys /home/impostor/.ssh/authorized_keys
 chown -R impostor:impostor /home/impostor/.ssh
 chmod 755 /home/impostor/.ssh
 chmod 644 /home/impostor/.ssh/authorized_keys
 
 # Update and install packages
 echo 'Server = https://mirrors.cat.net/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist
-pacman -Syyu --noconfirm --needed docker docker-compose sudo
+pacman -Syyu --ignore linux-lts --noconfirm --needed docker docker-compose sudo
 systemctl enable --now docker
 
 # Modify user
