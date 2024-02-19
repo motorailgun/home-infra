@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    network_mode: host
+    command: docker run cloudflare/cloudflared:latest tunnel --no-autoupdate run --token # here goes tunnel token!
+    restart: always
+
+  wgui:
+    image: ngoduykhanh/wireguard-ui:latest
+    container_name: wireguard-ui
+    cap_add:
+      - NET_ADMIN
+    network_mode: host
+    environment:
+      - WGUI_USERNAME=admin
+      - WGUI_PASSWORD=admin
+      - WGUI_MANAGE_START=false
+      - WGUI_MANAGE_RESTART=false
+    logging:
+      driver: json-file
+      options:
+        max-size: 50m
+    volumes:
+      - db:/app/db
+      - /etc/wireguard:/etc/wireguard
+    restart: always
+
+volumes:
+  db:

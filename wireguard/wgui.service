@@ -1,0 +1,14 @@
+[Unit]
+Description=Wireguard Web GUI and Cloudflare tunnel
+Requires=docker.service
+
+[Service]
+Type=Simple
+Environment=COMPOSE_FILE=/home/arch/docker-compose.yml
+
+ExecStartPre=-/usr/local/bin/docker-compose down
+ExecStart=/usr/local/bin/docker-compose up
+ExecStop=/usr/local/bin/docker-compose down
+
+[Install]
+WantedBy=multi-user.target
