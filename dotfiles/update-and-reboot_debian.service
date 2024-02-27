@@ -2,7 +2,8 @@
 Description=Update packages and reboot
 
 [Service]
-Type=exec
+Type=oneshot
+RemainAfterExit=no
 ExecStartPre=/usr/bin/apt update -y
 ExecStart=/bin/bash -c '/usr/bin/apt upgrade -y && /usr/bin/apt clean -y'
 ExecStartPost=/usr/bin/systemctl reboot

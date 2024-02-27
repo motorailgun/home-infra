@@ -2,6 +2,7 @@
 Description=Update packages and reboot
 
 [Service]
-Type=exec
+Type=oneshot
+RemainAfterExit=no
 ExecStart=pacman -Syu --noconfirm
 ExecStartPost=/usr/bin/systemctl reboot
