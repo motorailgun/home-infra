@@ -1,0 +1,12 @@
+[Unit]
+Description=Periodically update packages and reboot system
+Requires=multi-user.target
+After=multi-user.target
+
+[Timer]
+Unit=update-and-reboot.service
+OnCalendar=Tue *-*-* 04:00:00 Asia/Tokyo
+RandomizedDelaySec=1h
+
+[Install]
+WantedBy=timers.target

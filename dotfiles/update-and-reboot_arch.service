@@ -1,0 +1,7 @@
+[Unit]
+Description=Update packages and reboot
+
+[Service]
+Type=exec
+ExecStart=pacman -Syu --noconfirm
+ExecStartPost=/usr/bin/systemctl reboot
