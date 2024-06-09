@@ -1,0 +1,31 @@
+services:
+  endlessh:
+    image: ghcr.io/shizunge/endlessh-go:2024.0119.1
+    entrypoint: ["/endlessh", "-logtostderr", "-v=1", "-enable_prometheus", "-geoip_supplier=off"]
+    ports:
+      - "22:2222"
+      - "2112:2112"
+  
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - type: bind
+        source: ./prometheus.yml
+        target: /etc/prometheus/prometheus.yml
+      - ./prometheus_save:/prometheus
+  
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana_save:/var/lib/grafana
+  
+  tunnel:
+    restart: always
+    image: cloudflare/cloudflared
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=***FILL_HERE***
