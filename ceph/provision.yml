@@ -1,0 +1,20 @@
+- name: Provision ceph requirements.
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Install qemu guest agent.
+      ansible.builtin.apt:
+        name: qemu-guest-agent
+        state: present
+
+    - name: Install podman.
+      ansible.builtin.apt:
+        name: podman
+        state: present
+
+    - name: Install cephadm.
+      ansible.builtin.apt:
+        name: cephadm
+        state: present
