@@ -1,0 +1,14 @@
+[Unit]
+Description=Prometheus, Grafana and Cloudflare Tunnel
+Requires=docker.service
+
+[Service]
+Type=Simple
+Environment=COMPOSE_FILE=/home/arch/docker-compose.yml
+
+ExecStartPre=-/usr/bin/docker-compose down
+ExecStart=/usr/bin/docker-compose up
+ExecStop=/usr/bin/docker-compose down
+
+[Install]
+WantedBy=multi-user.target
