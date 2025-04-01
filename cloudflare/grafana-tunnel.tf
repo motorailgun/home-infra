@@ -29,7 +29,7 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "grafana" {
             deny_access = true
           }
         }
-        service = "https://172.16.1.1:3000"
+        service = "http://172.16.1.1:3000"
       },
       {
         service = "http_status:404"
