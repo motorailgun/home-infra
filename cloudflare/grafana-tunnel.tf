@@ -29,8 +29,7 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "grafana" {
             deny_access = true
           }
         }
-        # should be applied later, after provider's bug gets fixed
-        service = "https://172.16.1.2:3000"
+        service = "https://172.16.1.1:3000"
       },
       {
         service = "http_status:404"
