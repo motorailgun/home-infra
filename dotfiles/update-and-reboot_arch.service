@@ -4,5 +4,5 @@ Description=Update packages and reboot
 [Service]
 Type=oneshot
 RemainAfterExit=no
-ExecStart=pacman -Syu --noconfirm
+ExecStart=/usr/bin/bash -c "pacman -Syu --noconfirm; pacman -Scc --noconfirm"
 ExecStartPost=/usr/bin/systemctl reboot
