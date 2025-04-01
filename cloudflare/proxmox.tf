@@ -16,7 +16,7 @@ terraform {
 }
 
 provider "cloudflare" {
-  api_token    = var.cloudflare_token
+  api_token = var.cloudflare_token
 }
 
 variable "cloudflare_account_id" {
@@ -40,15 +40,15 @@ data "cloudflare_zone" "target" {
 }
 
 resource "cloudflare_zero_trust_tunnel_cloudflared" "pmx" {
-  account_id    = var.cloudflare_account_id
-  name          = "proxmox"
+  account_id = var.cloudflare_account_id
+  name       = "proxmox"
   config_src = "cloudflare"
 }
 
 resource "cloudflare_dns_record" "canel" {
-  name     = "canel"
+  name    = "canel"
   content = "${cloudflare_zero_trust_tunnel_cloudflared.pmx.id}.cfargotunnel.com"
-  proxied  = true
+  proxied = true
   settings = {
     flatten_cname = false
   }
@@ -58,9 +58,9 @@ resource "cloudflare_dns_record" "canel" {
 }
 
 resource "cloudflare_dns_record" "yuzuru" {
-  name     = "yuzuru"
+  name    = "yuzuru"
   content = "${cloudflare_zero_trust_tunnel_cloudflared.pmx.id}.cfargotunnel.com"
-  proxied  = true
+  proxied = true
   settings = {
     flatten_cname = false
   }
@@ -70,9 +70,9 @@ resource "cloudflare_dns_record" "yuzuru" {
 }
 
 resource "cloudflare_dns_record" "minase" {
-  name     = "minase"
+  name    = "minase"
   content = "${cloudflare_zero_trust_tunnel_cloudflared.pmx.id}.cfargotunnel.com"
-  proxied  = true
+  proxied = true
   settings = {
     flatten_cname = false
   }
@@ -82,9 +82,9 @@ resource "cloudflare_dns_record" "minase" {
 }
 
 resource "cloudflare_dns_record" "averuni" {
-  name     = "averuni"
+  name    = "averuni"
   content = "${cloudflare_zero_trust_tunnel_cloudflared.pmx.id}.cfargotunnel.com"
-  proxied  = true
+  proxied = true
   settings = {
     flatten_cname = false
   }
@@ -94,8 +94,8 @@ resource "cloudflare_dns_record" "averuni" {
 }
 
 resource "cloudflare_zero_trust_access_policy" "github_pmx" {
-  account_id        = var.cloudflare_account_id
-  decision          = "allow"
+  account_id = var.cloudflare_account_id
+  decision   = "allow"
   include = [
     {
       login_method = {
@@ -114,9 +114,9 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "pmx" {
       {
         hostname = "minase.${data.cloudflare_zone.target.name}"
         origin_request = {
-          no_tls_verify            = true
+          no_tls_verify = true
           access = {
-            aud_tag = [cloudflare_zero_trust_access_application.pmx.id]
+            aud_tag     = [cloudflare_zero_trust_access_application.pmx.id]
             deny_access = true
           }
         }
@@ -125,9 +125,9 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "pmx" {
       {
         hostname = "averuni.${data.cloudflare_zone.target.name}"
         origin_request = {
-          no_tls_verify            = true
+          no_tls_verify = true
           access = {
-            aud_tag = [cloudflare_zero_trust_access_application.pmx.id]
+            aud_tag     = [cloudflare_zero_trust_access_application.pmx.id]
             deny_access = true
           }
         }
@@ -136,9 +136,9 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "pmx" {
       {
         hostname = "canel.${data.cloudflare_zone.target.name}"
         origin_request = {
-          no_tls_verify            = true
+          no_tls_verify = true
           access = {
-            aud_tag = [cloudflare_zero_trust_access_application.pmx.id]
+            aud_tag     = [cloudflare_zero_trust_access_application.pmx.id]
             deny_access = true
           }
         }
@@ -147,9 +147,9 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "pmx" {
       {
         hostname = "yuzuru.${data.cloudflare_zone.target.name}"
         origin_request = {
-          no_tls_verify            = true
+          no_tls_verify = true
           access = {
-            aud_tag = [cloudflare_zero_trust_access_application.pmx.id]
+            aud_tag     = [cloudflare_zero_trust_access_application.pmx.id]
             deny_access = true
           }
         }
@@ -168,26 +168,26 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "pmx" {
 }
 
 resource "cloudflare_zero_trust_access_application" "pmx" {
-  account_id                   = var.cloudflare_account_id
-  allowed_idps                 = [var.cloudflare_idp_github_id]
-  app_launcher_visible         = true
-  auto_redirect_to_identity    = true
+  account_id                = var.cloudflare_account_id
+  allowed_idps              = [var.cloudflare_idp_github_id]
+  app_launcher_visible      = true
+  auto_redirect_to_identity = true
   destinations = [
     {
-      type        = "public"
-      uri         = "minase.${data.cloudflare_zone.target.name}"
+      type = "public"
+      uri  = "minase.${data.cloudflare_zone.target.name}"
     },
     {
-      type        = "public"
-      uri         = "averuni.${data.cloudflare_zone.target.name}"
+      type = "public"
+      uri  = "averuni.${data.cloudflare_zone.target.name}"
     },
     {
-      type        = "public"
-      uri         = "canel.${data.cloudflare_zone.target.name}"
+      type = "public"
+      uri  = "canel.${data.cloudflare_zone.target.name}"
     },
     {
-      type        = "public"
-      uri         = "yuzuru.${data.cloudflare_zone.target.name}"
+      type = "public"
+      uri  = "yuzuru.${data.cloudflare_zone.target.name}"
     },
   ]
   domain                     = "minase.${data.cloudflare_zone.target.name}"
@@ -197,7 +197,7 @@ resource "cloudflare_zero_trust_access_application" "pmx" {
   options_preflight_bypass   = false
   policies = [
     {
-      decision         = "allow"
+      decision = "allow"
       exclude = [
       ]
       include = [
@@ -218,5 +218,5 @@ resource "cloudflare_zero_trust_access_application" "pmx" {
   session_duration             = "24h"
   skip_app_launcher_login_page = false
   type                         = "self_hosted"
-  tags = []
+  tags                         = []
 }
