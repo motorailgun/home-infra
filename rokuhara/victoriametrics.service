@@ -1,5 +1,5 @@
 [Unit]
-Description=Prometheus, Grafana and Cloudflare Tunnel
+Description=VictoriaMetrics, Grafana and Cloudflare Tunnel
 Requires=docker.service
 
 [Service]
