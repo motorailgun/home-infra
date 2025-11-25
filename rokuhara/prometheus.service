@@ -3,7 +3,7 @@ Description=Prometheus, Grafana and Cloudflare Tunnel
 Requires=docker.service
 
 [Service]
-Type=Simple
+Type=simple
 WorkingDirectory=/home/arch
 Environment=COMPOSE_FILE=/home/arch/docker-compose.yml
 
