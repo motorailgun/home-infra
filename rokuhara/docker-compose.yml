@@ -1,6 +1,6 @@
 services:
   grafana:
-    image: grafana/grafana@sha256:aaeb1e00ddc33159f6a0406fe9795d4eee1975a1c7b6d4fa889a0bbfd03e4a0f
+    image: grafana/grafana@sha256:72dde541e643163175c2470794634ca42b719802bb8434e9a45f6ba39e64f9dc
     networks:
       default:
         ipv4_address: '172.16.1.2'
@@ -21,7 +21,7 @@ services:
         source: ./prometheus.yml
         target: /etc/prometheus/prometheus.yml
   cloudflare-tunnel:
-    image: cloudflare/cloudflared@sha256:03737f27c38ecfb257a55664953cac510727cf27052c51ddb7c8ff1a2b9969e1
+    image: cloudflare/cloudflared@sha256:89ee50efb1e9cb2ae30281a8a404fed95eb8f02f0a972617526f8c5b417acae2
     command: ['tunnel', '--no-autoupdate', 'run']
     environment:
       - TUNNEL_TOKEN=HERE_GOES_MY_TOKEN
