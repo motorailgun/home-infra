@@ -1,0 +1,43 @@
+---
+- name: Install dnsmasq
+  ansible.builtin.apt:
+    name: dnsmasq
+    state: present
+    update_cache: true
+
+- name: Create networkd configuration for ens3
+  ansible.builtin.template:
+    src: ens19.network.j2
+    dest: /etc/systemd/network/10-ens19.network
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Restart networkd
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: restarted
+    daemon_reload: true
+
+- name: Create TFTP root directory
+  ansible.builtin.file:
+    path: /var/ftpd
+    state: directory
+    mode: '0755'
+
+- name: Deploy dnsmasq config for DHCP + PXE only
+  ansible.builtin.template:
+    src: dnsmasq.conf.j2
+    dest: /etc/dnsmasq.d/pxe.conf
+    mode: '0644'
+
+- name: Restart dnsmasq
+  ansible.builtin.systemd:
+    name: dnsmasq
+    state: restarted
+
+- name: Ensure dnsmasq is enabled and running
+  ansible.builtin.systemd:
+    name: dnsmasq
+    enabled: true
+    state: started

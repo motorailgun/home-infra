@@ -1,0 +1,5 @@
+- name: configure maas
+  hosts: maas
+  become: true
+  roles:
+    - maas
