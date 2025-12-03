@@ -1,14 +1,52 @@
 ---
-- name: Install dnsmasq
-  ansible.builtin.apt:
-    name: dnsmasq
-    state: present
-    update_cache: true
+- name: Persist apt sources.list
+  ansible.builtin.lineinfile:
+    path: /etc/cloud/cloud.cfg
+    insertafter: EOF
+    line: 'apt_preserve_sources_list: true'
 
-- name: Create networkd configuration for ens3
+- name: Update sources.list
+  ansible.builtin.replace:
+    path: /etc/apt/sources.list.d/ubuntu.sources
+    regexp: 'http://archive.ubuntu.com/ubuntu'
+    replace: 'https://ftp.udx.icscoe.jp/Linux/ubuntu/'
+
+- name: Update sources.list for security
+  ansible.builtin.replace:
+    path: /etc/apt/sources.list.d/ubuntu.sources
+    regexp: 'http://security.ubuntu.com/ubuntu'
+    replace: 'https://ftp.udx.icscoe.jp/Linux/ubuntu/'
+
+- name: Install maas via snap
+  community.general.snap:
+    name: 'maas'
+    channel: '3.6/stable'
+    state: present
+
+- name: Create MAAS Unix Group
+  ansible.builtin.group:
+    name: maas
+    state: present
+
+- name: Create MAAS Unix User
+  ansible.builtin.user:
+    name: maas
+    group: maas
+    state: present
+
+- name: Install postgres, acl and psycopg2
+  ansible.builtin.apt:
+    name: '{{ item }}'
+    update_cache: true
+  with_items:
+    - postgresql-16
+    - acl
+    - python3-psycopg2
+
+- name: Create networkd configuration for enp6s19
   ansible.builtin.template:
-    src: ens19.network.j2
-    dest: /etc/systemd/network/10-ens19.network
+    src: enp6s19.network.j2
+    dest: /etc/systemd/network/10-enp6s19.network
     owner: root
     group: root
     mode: '0644'
@@ -19,25 +57,53 @@
     state: restarted
     daemon_reload: true
 
-- name: Create TFTP root directory
-  ansible.builtin.file:
-    path: /var/ftpd
-    state: directory
-    mode: '0755'
+- name: Stop timesyncd
+  ansible.builtin.systemd:
+    name: systemd-timesyncd
+    state: stopped
+    enabled: false
 
-- name: Deploy dnsmasq config for DHCP + PXE only
+- name: "Write postgresql.conf"
   ansible.builtin.template:
-    src: dnsmasq.conf.j2
-    dest: /etc/dnsmasq.d/pxe.conf
+    src: "postgresql.conf.j2"
+    dest: "/etc/postgresql/16/main/postgresql.conf"
     mode: '0644'
+    owner: 'postgres'
+    group: 'postgres'
+  notify:
+    - "Stop Postgres Service To Load New Configuration"
+    - "Start Postgres Service To Load New Configuration"
 
-- name: Restart dnsmasq
-  ansible.builtin.systemd:
-    name: dnsmasq
-    state: restarted
+- name: Create MAAS Postgres User
+  community.postgresql.postgresql_user:
+    name: maas
+    password: maas
+    login_user: "postgres"
+    state: present
+  become: true
+  become_user: postgres
 
-- name: Ensure dnsmasq is enabled and running
-  ansible.builtin.systemd:
-    name: dnsmasq
-    enabled: true
-    state: started
+- name: Create MAAS Postgres Database
+  community.postgresql.postgresql_db:
+    name: maas
+    state: 'present'
+    owner: maas
+  become: true
+  become_user: postgres
+
+# FIXME: this `maas init` is interactive and blocks execution; should set maas url
+# - name: Initialize maas
+#   ansible.builtin.command: 'maas init region+rack --database-uri "postgres://maas:maas@127.0.0.1/maas"'
+#   register: maas_result
+#   changed_when: 'maas_result.rc == 0'
+#   become: true
+#   become_user: root
+
+# - name: Add an administrator to MAAS
+#   ansible.builtin.command: maas createadmin \
+#     --username=admin --password=admin \
+#     --email=tmp@example.com --ssh-import=gh:motorailgun
+#   register: maas_result
+#   changed_when: 'maas_result.rc == 0'
+#   become: true
+#   become_user: root
