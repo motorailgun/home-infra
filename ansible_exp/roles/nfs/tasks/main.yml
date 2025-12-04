@@ -1,0 +1,34 @@
+---
+- name: Install nfs-kernel-server
+  ansible.builtin.apt:
+    name: nfs-kernel-server
+    state: present
+    update_cache: false
+
+- name: Mount needed disk
+  ansible.posix.mount:
+    src: UUID=d877afe2-911e-4a99-a032-f43c805e0992
+    path: /srv
+    state: present
+    fstype: ext4
+    boot: true
+
+- name: Put NFS export setting
+  ansible.builtin.lineinfile:
+    path: /etc/exports
+    regexp: EOF
+    line: '/srv 172.17.1.0/255.255.255.0(rw,no_root_squash,subtree_check)'
+
+- name: Mask unnecessary units for NFSv4
+  ansible.builtin.systemd_service:
+    name: '{{ item }}'
+    masked: true
+  with_items:
+    - rpcbind.service
+    - rpcbind.socket
+
+- name: Start nfs-kernel-server
+  ansible.builtin.systemd:
+    name: nfs-kernel-server
+    state: restarted
+    daemon_reload: true
