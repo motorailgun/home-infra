@@ -1,0 +1,56 @@
+
+# Listen on this specific port instead of the standard DNS port
+# (53). Setting this to zero completely disables DNS function,
+# leaving only DHCP and/or TFTP.
+
+# Disabling DNS
+port=0
+
+# If you don't want dnsmasq to read /etc/resolv.conf or any other
+# file, getting its servers from this file instead (see below), then
+# uncomment this.
+no-resolv
+
+# If you don't want dnsmasq to poll /etc/resolv.conf or other resolv
+# files for changes and re-read them then uncomment this.
+no-poll
+
+# If you want dnsmasq to listen for DHCP and DNS requests only on
+# specified interfaces (and the loopback) give the name of the
+# interface (eg eth0) here.
+# Repeat the line for more than one interface.
+
+# Only listen DHCP request on Raspi-side interface
+interface=ens19
+bind-interfaces
+
+# Uncomment this to enable the integrated DHCP server, you need
+# to supply the range of addresses available for lease and optionally
+# a lease time. If you have more than one network, you will need to
+# repeat this for each network on which you want to supply DHCP
+# service.
+
+# Set Raspi cluster's ip range
+dhcp-range=172.17.1.150,172.17.1.200
+
+# DHCP options
+log-dhcp
+dhcp-leasefile=/var/lib/misc/dnsmasq.leases
+dhcp-option=option:router,172.17.1.2
+dhcp-option=option:netmask,255.255.255.0
+dhcp-option=option:dns-server,1.1.1.1
+# dhcp-match=set:efi-x86_64,option:client-arch,7 # EFI bytecode
+# dhcp-match=set:efi-x86_64,option:client-arch,9 # EFI x86-64
+# dhcp-boot=tag:efi-x86_64,"/grubnetx64.efi"
+# dhcp-match=set:bios,option:client-arch,0 # Intel x86PC
+# dhcp-boot=tag:bios,"pxelinux.0"
+dhcp-boot=pxelinux.0,,172.17.1.1
+
+
+# Enable dnsmasq's built-in TFTP server
+enable-tftp
+
+# Set the root directory for files available via FTP.
+tftp-root=/var/ftpd
+
+pxe-service=0,"Raspberry Pi Boot"

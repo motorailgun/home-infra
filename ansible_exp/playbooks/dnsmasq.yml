@@ -1,0 +1,5 @@
+- name: configure dnsmasq
+  hosts: dnsmasq
+  become: true
+  roles:
+    - dnsmasq
