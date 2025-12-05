@@ -1,0 +1,86 @@
+! NEC Portable Internetwork Core Operating System Software
+! IX Series IX2105 (magellan-sec) Software, Version 10.2.42, RELEASE SOFTWARE
+! Compiled Sep 09-Fri-2022 13:40:53 JST #2
+! Current time Dec 06-Sat-2025 00:17:46 JST
+!
+hostname Kiyoteru
+timezone +09 00
+!
+username motorailgun password hash 83Aa5B0d3FFe8f27A4508C10eD105a@ administrator
+!
+ntp ip enable
+ntp server 133.243.238.163
+ntp source GigaEthernet1.0
+!
+!
+ip route default GigaEthernet0.1
+ip route default 163.220.237.254
+ip route 172.17.1.0/24 192.168.1.36
+ip dhcp enable
+ip access-list 10 permit ip src 192.168.1.0/24 dest 192.168.1.1/32
+ip access-list ip-pass permit ip src 192.168.1.0/24 dest any
+ip access-list wireguard permit udp src any sport any dest any dport eq 51820
+ip access-list dynamic lan-to-wan access ip-pass
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip name-server 1.1.1.1
+ip name-server 8.8.8.8
+dns cache enable
+!
+proxy-dns ip enable
+proxy-dns server 8.8.8.8 priority 254
+proxy-dns server 1.1.1.1 priority 250
+!
+!
+ssh-server ip enable
+!
+http-server username motorailgun
+http-server ip enable
+!
+!
+!
+!
+ip dhcp profile first-default
+  assignable-range 192.168.1.2 192.168.1.120
+  default-gateway 192.168.1.1
+  dns-server 192.168.1.1
+  lease-time 21600
+!
+device GigaEthernet0
+!
+device GigaEthernet1
+!
+interface GigaEthernet0.0
+  no ip address
+  no shutdown
+!
+interface GigaEthernet1.0
+  ip address 192.168.1.1/24
+  ip dhcp binding first-default
+  ipv6 address 2001:1::1/64
+  no shutdown
+!
+interface GigaEthernet0.1
+  encapsulation dot1q 2033 tpid 8100
+  auto-connect
+  ip address 163.220.236.21/23
+  ip napt enable
+  ip napt static GigaEthernet0.1 1
+  ip napt service wireguard 192.168.1.160 none udp 51820
+  no shutdown
+!
+interface Loopback0.0
+  no ip address
+!
+interface Null0.0
+  no ip address
+!
+web-console system information
+  o wan1 GigaEthernet0.0
