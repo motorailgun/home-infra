@@ -1,7 +1,7 @@
 ! NEC Portable Internetwork Core Operating System Software
 ! IX Series IX2105 (magellan-sec) Software, Version 10.2.42, RELEASE SOFTWARE
 ! Compiled Sep 09-Fri-2022 13:40:53 JST #2
-! Current time Dec 06-Sat-2025 00:17:46 JST
+! Current time Dec 06-Sat-2025 00:28:24 JST
 !
 hostname Kiyoteru
 timezone +09 00
@@ -13,8 +13,8 @@ ntp server 133.243.238.163
 ntp source GigaEthernet1.0
 !
 !
-ip route default GigaEthernet0.1
 ip route default 163.220.237.254
+ip route 10.0.0.0/16 192.168.1.160
 ip route 172.17.1.0/24 192.168.1.36
 ip dhcp enable
 ip access-list 10 permit ip src 192.168.1.0/24 dest 192.168.1.1/32
@@ -72,7 +72,6 @@ interface GigaEthernet0.1
   auto-connect
   ip address 163.220.236.21/23
   ip napt enable
-  ip napt static GigaEthernet0.1 1
   ip napt service wireguard 192.168.1.160 none udp 51820
   no shutdown
 !
