@@ -38,13 +38,13 @@ log-dhcp
 dhcp-leasefile=/var/lib/misc/dnsmasq.leases
 dhcp-option=option:router,172.17.1.2
 dhcp-option=option:netmask,255.255.255.0
-dhcp-option=option:dns-server,1.1.1.1
+dhcp-option=option:dns-server,1.1.1.1,8.8.8.8
 # dhcp-match=set:efi-x86_64,option:client-arch,7 # EFI bytecode
 # dhcp-match=set:efi-x86_64,option:client-arch,9 # EFI x86-64
 # dhcp-boot=tag:efi-x86_64,"/grubnetx64.efi"
 # dhcp-match=set:bios,option:client-arch,0 # Intel x86PC
 # dhcp-boot=tag:bios,"pxelinux.0"
-dhcp-boot=pxelinux.0,,172.17.1.1
+dhcp-boot="pxelinux.0"
 
 
 # Enable dnsmasq's built-in TFTP server
