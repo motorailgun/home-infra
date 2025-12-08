@@ -27,8 +27,15 @@ chroot $WORK_DIR /usr/bin/qemu-aarch64-static /bin/bash <<'EOF'
     apt install -y nfs-common
 EOF
 
+rm $WORK_DIR/sbin/init
 cp init.sh $WORK_DIR/sbin/init
 chmod 777 $WORK_DIR/sbin/init
+
+mkdir -p $WORK_DIR/etc/systemd/system.conf.d
+echo -e "[Manager]\nRuntimeWatchdogSec=10\n" > $WORK_DIR/etc/systemd/system.conf.d/watchdog.conf
+chmod -R 755 $WORK_DIR/etc/systemd/system.conf.d
+
+echo "options bcm2835_wdt heartbeat=15 nowayout=0" > $WORK_DIR/etc/modprobe.d/bcm2835-wdt.conf
 
 umount -R /mnt
 losetup -d "$LOOP_DEV"
