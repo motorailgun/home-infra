@@ -1,0 +1,24 @@
+- name: configure immich
+  hosts: immich
+  become: true
+  gather_facts: true
+  vars_prompt:
+    - name: luks_passphrase
+      prompt: "LUKS passphrase"
+      private: true
+      confirm: true
+  vars:
+    luks_device: /dev/vda
+    luks_name: immich_crypt
+    mount_point: /mnt/immich
+    ext4_mount_opts: "defaults,noatime"
+
+    app_name: immich
+    compose_dir: /opt/immich
+    systemd_unit_name: immich.service
+
+    docker_arch: >-
+      {{ {'x86_64': 'amd64', 'aarch64': 'arm64', 'armv7l': 'armhf'}
+         .get(ansible_architecture, ansible_architecture) }}
+  roles:
+    - immich

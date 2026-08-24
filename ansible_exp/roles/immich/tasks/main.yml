@@ -1,0 +1,190 @@
+---
+- name: Check luks device
+  ansible.builtin.stat:
+    path: "{{ luks_device }}"
+  register: dev_stat
+
+- name: Check partition
+  ansible.builtin.command: "lsblk -nro NAME,TYPE,MOUNTPOINT {{ luks_device }}"
+  changed_when: false
+  register: lsblk_out
+
+- name: Check if target mounted
+  ansible.builtin.assert:
+    that:
+      - lsblk_out.stdout_lines | select('search', '\\s/\\S') | list | length == 0
+        or (lsblk_out.stdout is search(luks_name))
+    fail_msg: >-
+      {{ luks_device }} is mounted:
+      {{ lsblk_out.stdout }}
+
+- name: Apt update
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install packages
+  ansible.builtin.apt:
+    name:
+      - cryptsetup
+      - cryptsetup-initramfs
+      - parted
+      - python3-cryptography
+    state: present
+
+- name: Create luks
+  community.crypto.luks_device:
+    device: "{{ luks_device }}"
+    state: present
+    type: luks2
+    cipher: aes-xts-plain64
+    hash: sha256
+    passphrase: "{{ luks_passphrase }}"
+    pbkdf:
+      algorithm: argon2id
+  register: luks_created
+
+- name: Open luks
+  community.crypto.luks_device:
+    device: "{{ luks_device }}"
+    state: opened
+    name: "{{ luks_name }}"
+    passphrase: "{{ luks_passphrase }}"
+
+- name: Get LUKS UUID
+  ansible.builtin.command: "cryptsetup luksUUID {{ luks_device }}"
+  changed_when: false
+  register: luks_uuid
+
+- name: Format ext4
+  community.general.filesystem:
+    fstype: ext4
+    dev: "/dev/mapper/{{ luks_name }}"
+    force: false
+
+- name: Get ext4 UUID
+  ansible.builtin.command: "blkid -s UUID -o value /dev/mapper/{{ luks_name }}"
+  changed_when: false
+  register: ext4_uuid
+
+- name: Set crypttab
+  ansible.builtin.lineinfile:
+    path: /etc/crypttab
+    create: true
+    owner: root
+    group: root
+    mode: "0600"
+    regexp: "^{{ luks_name }}\\s"
+    line: >-
+      {{ luks_name }} UUID={{ luks_uuid.stdout }}
+      none luks,discard,noearly
+  notify: reload_systemd
+
+- name: Create mount point
+  ansible.builtin.file:
+    path: "{{ mount_point }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Set fstab
+  ansible.posix.mount:
+    path: "{{ mount_point }}"
+    src: "UUID={{ ext4_uuid.stdout }}"
+    fstype: ext4
+    opts: "{{ ext4_mount_opts }},nofail"
+    dump: "0"
+    passno: "0"
+    state: mounted
+  notify: reload_systemd
+
+- name: Create directories
+  ansible.builtin.file:
+    path: "{{ mount_point }}/{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - library
+    - postgres
+
+- name: Install docker packages
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+      - python3-debian
+    state: present
+
+- name: Add docker repo
+  ansible.builtin.deb822_repository:
+    name: docker
+    types: [deb]
+    uris: "https://download.docker.com/linux/{{ ansible_distribution | lower }}"
+    suites: ["{{ ansible_distribution_release }}"]
+    components: [stable]
+    architectures: ["{{ docker_arch }}"]
+    signed_by: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+    state: present
+    enabled: true
+    mode: "0644"
+
+- name: Install docker
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: true
+
+- name: Enable dockerd
+  ansible.builtin.systemd_service:
+    name: docker
+    enabled: true
+    state: started
+
+- name: Create compose dir
+  ansible.builtin.file:
+    path: "{{ compose_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"
+
+- name: Place docker files
+  ansible.builtin.copy:
+    src: files/{{ item }}
+    dest: "{{ compose_dir }}/{{ item }}"
+    owner: root
+    group: root
+    mode: "0640"
+  loop:
+    - "docker-compose.yml"
+    - ".env"
+
+- name: Place systemd unit
+  ansible.builtin.copy:
+    src: "files/{{ systemd_unit_name }}"
+    dest: "/etc/systemd/system/{{ systemd_unit_name }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - reload_systemd
+    - restart_immich
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable and start systemd unit
+  ansible.builtin.systemd_service:
+    name: "{{ systemd_unit_name }}"
+    enabled: true
+    state: started
+    daemon_reload: true
