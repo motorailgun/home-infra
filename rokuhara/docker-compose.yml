@@ -41,7 +41,7 @@ services:
       - '--remoteWrite.url=http://172.16.1.4:8428/api/v1/write'
     restart: always
   cloudflare-tunnel:
-    image: cloudflare/cloudflared@sha256:89ee50efb1e9cb2ae30281a8a404fed95eb8f02f0a972617526f8c5b417acae2
+    image: cloudflare/cloudflared@sha256:1b1d34d0a9c0bfca9de72db8460d328db3f19edd2b96169114e3e893a97bbe53
     networks:
       default:
         ipv4_address: '172.16.1.6'
