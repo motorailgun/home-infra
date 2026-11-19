@@ -1,8 +1,8 @@
-- name: reload_systemd
+- name: Reload systemd
   ansible.builtin.systemd_service:
     daemon_reload: true
 
-- name: restart_immich
+- name: Restart_immich
   ansible.builtin.systemd_service:
     name: "{{ systemd_unit_name }}"
     state: restarted
