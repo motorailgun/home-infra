@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+use chroot = true
+
+{% for repo in mirror_repos %}
+
+[{{ repo.name }}]
+path = {{ mirror_root }}/{{ repo.name }}
+comment = {{ repo.description }}
+read only = true
+
+{% endfor %}

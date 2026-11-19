@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+[Unit]
+Description=Sync {{ item.description }} from {{ item.upstream | urlsplit('hostname') }} to {{ mirror_root }}/{{ item.name }}
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor={{ mirror_root }}
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/rsync {{ item.rsync_args }} {{ item.upstream }} {{ mirror_root }}/{{ item.name }}/

@@ -1,0 +1,39 @@
+---
+- name: Install ufw
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+
+- name: Set ufw default policies
+  community.general.ufw:
+    direction: "{{ item.direction }}"
+    default: "{{ item.policy }}"
+  loop:
+    - { direction: incoming, policy: deny }
+    - { direction: outgoing, policy: allow }
+    - { direction: routed, policy: deny }
+  loop_control:
+    label: "{{ item.direction }}: {{ item.policy }}"
+
+- name: Set ufw logging level
+  community.general.ufw:
+    logging: low
+
+- name: Add ufw rules
+  community.general.ufw:
+    rule: "{{ item.rule }}"
+    port: "{{ item.port | default(omit) }}"
+    proto: "{{ item.proto | default(omit) }}"
+    from_ip: "{{ item.from_ip | default(omit) }}"
+    to_ip: "{{ item.to_ip | default(omit) }}"
+    comment: "{{ item.comment | default(omit) }}"
+  loop: "{{ mirror_ufw_rules }}"
+  loop_control:
+    label: >-
+      {{ item.rule }}
+      {{ item.from_ip | default('any') }} -> {{ item.to_ip | default('any') }}
+      {{ item.port | default('any') }}/{{ item.proto | default('any') }}
+
+- name: Enable ufw
+  community.general.ufw:
+    state: enabled

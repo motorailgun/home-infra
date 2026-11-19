@@ -1,0 +1,45 @@
+---
+mirror_root: /mirror
+mirror_mount_src: "UUID=dee87e3a-39db-4af8-a70d-c76ae655d5c5"
+mirror_mount_fstype: xfs
+mirror_mount_opts: rw,discard
+
+mirror_domain: mirror.aria-on-the-planet.es
+mirror_certbot_email: ""
+mirror_certbot_key_type: ecdsa
+
+# Upstream mirrors.
+#   name:          rsyncd module name and directory name under mirror_root
+#   unit:          base name of the systemd service/timer
+#   description:   human readable name (unit Description, rsyncd comment)
+#   upstream:      rsync source URL (trailing slash = sync contents)
+#   rsync_args:    rsync options
+#   interval:      OnUnitActiveSec for the timer
+mirror_repos:
+  - name: archlinux
+    unit: arch-sync
+    description: Arch Linux mirror
+    upstream: rsync://taipei.mirror.pkgbuild.com/packages/
+    rsync_args: -rlptH --safe-links --delete-delay --delay-updates --stats
+    interval: 2h
+
+  - name: CTAN
+    unit: ctan-sync
+    description: The Comprehensive TeX Archive Network mirror
+    # rsync.dante.ctan.org
+    upstream: rsync://89.58.7.101/CTAN/
+    rsync_args: -av --safe-links --delete
+    interval: 2h
+
+  - name: tdf
+    unit: tdf-sync
+    description: The Document Foundation mirror
+    upstream: rsync://ftp.yz.yamagata-u.ac.jp/pub/tdf/
+    rsync_args: --no-motd -rlptH --safe-links -hi --delete
+    interval: 8h
+
+mirror_ufw_rules:
+  - { rule: limit, port: "22", proto: tcp }
+  - { rule: allow, port: "80" }
+  - { rule: allow, port: "443" }
+  - { rule: allow, port: "873" }

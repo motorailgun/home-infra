@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+[Unit]
+Description=socket for fast remote file copy program daemon
+Documentation=man:rsync(1) man:rsyncd.conf(5)
+Conflicts=rsync.service
+ConditionPathExists=/etc/rsyncd.conf
+
+[Socket]
+ListenStream=873
+Accept=yes
+
+[Install]
+WantedBy=sockets.target

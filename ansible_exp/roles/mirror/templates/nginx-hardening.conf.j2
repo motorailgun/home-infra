@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+[Service]
+ProtectSystem=strict
+# /var/log/nginx: access.log / error.log (also reopened on logrotate)
+# /var/lib/nginx: client body / proxy temp paths (compiled-in defaults)
+# /run:           /run/nginx.pid (path is hard-coded in nginx.service ExecStop)
+ReadWritePaths=/var/log/nginx /var/lib/nginx /run

@@ -1,0 +1,14 @@
+- name: configure mirror
+  hosts: mirror
+  become: true
+  vars:
+    mirror_mount_src: UUID=dee87e3a-39db-4af8-a70d-c76ae655d5c5
+    mirror_ufw_extra_rules:
+      # the host's own global addresses
+      - { rule: allow, from_ip: 163.220.236.50 }
+      - { rule: allow, from_ip: "2401:5e40:1:2033::3:1" }
+      # prometheus node-exporter / nginx-exporter
+      - { rule: allow, from_ip: 192.168.1.0/24, to_ip: 192.168.1.180, port: "9100", comment: prometheus }
+      - { rule: allow, from_ip: 192.168.1.0/24, to_ip: 192.168.1.180, port: "9113" }
+  roles:
+    - mirror

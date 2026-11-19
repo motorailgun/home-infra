@@ -1,0 +1,24 @@
+# {{ ansible_managed }}
+[Unit]
+Description=fast remote file copy program daemon
+ConditionPathExists=/etc/rsyncd.conf
+After=network.target
+Documentation=man:rsync(1) man:rsyncd.conf(5)
+
+[Service]
+ExecStart=/usr/bin/rsync --daemon --no-detach
+RestartSec=1
+Restart=on-failure
+
+DynamicUser=yes
+StandardInput=socket
+AmbientCapabilities=CAP_SYS_CHROOT
+
+ProtectSystem=strict
+PrivateDevices=on
+NoNewPrivileges=on
+
+ProtectHome=yes
+ProtectControlGroups=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes

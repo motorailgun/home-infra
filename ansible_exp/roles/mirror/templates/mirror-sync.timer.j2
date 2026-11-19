@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+[Unit]
+Description=Run {{ item.unit }}.service every {{ item.interval }}
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec={{ item.interval }}
+Unit={{ item.unit }}.service
+RandomizedDelaySec=1800
+
+[Install]
+WantedBy=timers.target

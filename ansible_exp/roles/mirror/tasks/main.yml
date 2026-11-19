@@ -1,0 +1,200 @@
+---
+- name: Install packages
+  ansible.builtin.apt:
+    name:
+      - rsync
+      - certbot
+      - python3-certbot-nginx
+      - nginx
+      - nginx-extras
+    state: present
+
+- name: Create mirror root
+  ansible.builtin.file:
+    path: "{{ mirror_root }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Mount mirror filesystem
+  ansible.posix.mount:
+    path: "{{ mirror_root }}"
+    src: "{{ mirror_mount_src }}"
+    fstype: "{{ mirror_mount_fstype }}"
+    opts: "{{ mirror_mount_opts }}"
+    dump: "0"
+    passno: "1"
+    state: mounted
+
+- name: Create mirror directories
+  ansible.builtin.file:
+    path: "{{ mirror_root }}/{{ item.name }}"
+    state: directory
+    mode: "0755"
+  loop: "{{ mirror_repos }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Place sync services
+  ansible.builtin.template:
+    src: mirror-sync.service.j2
+    dest: "/etc/systemd/system/{{ item.unit }}.service"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ mirror_repos }}"
+  loop_control:
+    label: "{{ item.unit }}.service"
+  notify: Reload systemd
+
+- name: Place sync timers
+  ansible.builtin.template:
+    src: mirror-sync.timer.j2
+    dest: "/etc/systemd/system/{{ item.unit }}.timer"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ mirror_repos }}"
+  loop_control:
+    label: "{{ item.unit }}.timer"
+  notify: Reload systemd
+
+# === rsyncd ===
+- name: Place rsyncd.conf
+  ansible.builtin.template:
+    src: rsyncd.conf.j2
+    dest: /etc/rsyncd.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Place rsyncd socket units
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/etc/systemd/system/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - rsync.socket
+    - rsync@.service
+  notify: Reload systemd
+
+- name: Flush handlers (systemd units)
+  ansible.builtin.meta: flush_handlers
+
+- name: Disable packaged rsync.service in favor of rsync.socket
+  ansible.builtin.systemd_service:
+    name: rsync.service
+    enabled: false
+    state: stopped
+
+- name: Enable rsync.socket
+  ansible.builtin.systemd_service:
+    name: rsync.socket
+    enabled: true
+    state: started
+
+- name: Enable sync timers
+  ansible.builtin.systemd_service:
+    name: "{{ item.unit }}.timer"
+    enabled: true
+    state: started
+  loop: "{{ mirror_repos }}"
+  loop_control:
+    label: "{{ item.unit }}.timer"
+
+# === nginx ===
+- name: Create nginx.service drop-in directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/nginx.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Place nginx.service hardening drop-in
+  ansible.builtin.template:
+    src: nginx-hardening.conf.j2
+    dest: /etc/systemd/system/nginx.service.d/hardening.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload systemd
+    - Restart nginx
+
+- name: Remove default site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reload nginx
+
+- name: Place nginx site (HTTP only)
+  ansible.builtin.template:
+    src: mirror.conf.j2
+    dest: /etc/nginx/sites-enabled/mirror.conf
+    owner: root
+    group: root
+    mode: "0644"
+  vars:
+    mirror_tls_enabled: false
+  notify: Reload nginx
+
+- name: Enable nginx
+  ansible.builtin.systemd_service:
+    name: nginx
+    enabled: true
+    state: started
+
+- name: Flush handlers (nginx, HTTP only)
+  ansible.builtin.meta: flush_handlers
+
+# Only the nginx *authenticator* is used so that certbot never rewrites the
+# ansible-managed site; nginx is reloaded via the deploy hook on renewal.
+# --keep-until-expiring makes this a no-op while the current certificate is
+# still valid (Let's Encrypt allows only 5 duplicate certificates per week).
+# This also creates options-ssl-nginx.conf and ssl-dhparams.pem.
+- name: Obtain certificate
+  ansible.builtin.command:
+    argv: >-
+      {{ ['certbot', 'certonly', '--nginx', '--non-interactive', '--agree-tos',
+          '--keep-until-expiring',
+          '--key-type', mirror_certbot_key_type, '-d', mirror_domain]
+         + (['--email', mirror_certbot_email] if mirror_certbot_email
+            else ['--register-unsafely-without-email']) }}
+  register: mirror_certbot
+  changed_when: >-
+    'not yet due for renewal' not in (mirror_certbot.stdout + mirror_certbot.stderr)
+
+- name: Place nginx site (TLS enabled)
+  ansible.builtin.template:
+    src: mirror.conf.j2
+    dest: /etc/nginx/sites-enabled/mirror.conf
+    owner: root
+    group: root
+    mode: "0644"
+  vars:
+    mirror_tls_enabled: true
+  notify: Reload nginx
+
+- name: Flush handlers (nginx, TLS enabled)
+  ansible.builtin.meta: flush_handlers
+
+- name: Place certbot deploy hook to reload nginx
+  ansible.builtin.template:
+    src: reload-nginx.j2
+    dest: /etc/letsencrypt/renewal-hooks/deploy/reload-nginx
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Enable certbot renewal timer
+  ansible.builtin.systemd_service:
+    name: certbot.timer
+    enabled: true
+    state: started
+
+- name: Configure ufw
+  ansible.builtin.import_tasks: ufw.yml
