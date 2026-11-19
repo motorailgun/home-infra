@@ -4,5 +4,7 @@
   vars:
     mirror_mount_src: UUID=dee87e3a-39db-4af8-a70d-c76ae655d5c5
   roles:
+    - cloud_init
+    - selinux
     - mirror
     - node_exporter

@@ -1,0 +1,10 @@
+---
+- name: Place cloud-init config
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/etc/cloud/cloud.cfg.d/{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - '80-disable-refresh-key.cfg'
