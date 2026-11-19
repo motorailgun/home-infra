@@ -78,7 +78,7 @@
     line: >-
       {{ luks_name }} UUID={{ luks_uuid.stdout }}
       none luks,discard,noearly
-  notify: reload_systemd
+  notify: Reload systemd
 
 - name: Create mount point
   ansible.builtin.file:
@@ -97,7 +97,7 @@
     dump: "0"
     passno: "0"
     state: mounted
-  notify: reload_systemd
+  notify: Reload systemd
 
 - name: Create directories
   ansible.builtin.file:
@@ -176,8 +176,8 @@
     group: root
     mode: "0644"
   notify:
-    - reload_systemd
-    - restart_immich
+    - Reload systemd
+    - Restart immich
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
