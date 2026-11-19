@@ -44,3 +44,9 @@ mirror_ufw_rules:
   - { rule: allow, port: "443" }
   - { rule: allow, port: "873" }
   - { rule: allow, from_ip: 192.168.1.0/24, port: "8080", proto: tcp }
+  # the host's own global addresses
+  - { rule: allow, from_ip: 163.220.236.50 }
+  - { rule: allow, from_ip: "2401:5e40:1:2033::3:1" }
+  # prometheus node-exporter / nginx-exporter
+  - { rule: allow, from_ip: 192.168.1.0/24, to_ip: 192.168.1.180, port: "9100", comment: prometheus }
+  - { rule: allow, from_ip: 192.168.1.0/24, to_ip: 192.168.1.180, port: "9113" }
