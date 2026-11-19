@@ -19,6 +19,8 @@ server {
 
 	listen [::]:80;
 	listen 80;
+	# LAN only (ufw); also scraped by prometheus-nginx-exporter
+	listen 8080;
 {% if mirror_tls_enabled %}
 
 	listen [::]:443 ssl ipv6only=on;

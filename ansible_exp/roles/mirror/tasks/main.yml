@@ -7,6 +7,7 @@
       - python3-certbot-nginx
       - nginx
       - nginx-extras
+      - prometheus-nginx-exporter
     state: present
 
 - name: Create mirror root
@@ -181,6 +182,13 @@
 
 - name: Flush handlers (nginx, TLS enabled)
   ansible.builtin.meta: flush_handlers
+
+# Uses the packaged default scrape URI http://127.0.0.1:8080/stub_status
+- name: Enable nginx exporter
+  ansible.builtin.systemd_service:
+    name: prometheus-nginx-exporter.service
+    enabled: true
+    state: started
 
 - name: Place certbot deploy hook to reload nginx
   ansible.builtin.template:
